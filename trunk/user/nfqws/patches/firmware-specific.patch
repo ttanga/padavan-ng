@@ -1,0 +1,177 @@
+--- zapret-71.2.orig/ip2net/Makefile
++++ zapret-71.2/ip2net/Makefile
+@@ -1,6 +1,6 @@
+ CC ?= cc
+ OPTIMIZE ?= -Os
+-CFLAGS += -std=gnu99 $(OPTIMIZE) -flto=auto
++CFLAGS += -std=gnu99 $(OPTIMIZE)
+ CFLAGS_BSD = -Wno-address-of-packed-member
+ CFLAGS_WIN = -static
+ LIBS = 
+--- zapret-71.2.orig/nfq/Makefile
++++ zapret-71.2/nfq/Makefile
+@@ -1,6 +1,6 @@
+ CC ?= cc
+ OPTIMIZE ?= -Os
+-CFLAGS += -std=gnu99 $(OPTIMIZE) -flto=auto
++CFLAGS += -std=gnu99 $(OPTIMIZE)
+ CFLAGS_SYSTEMD = -DUSE_SYSTEMD
+ CFLAGS_BSD = -Wno-address-of-packed-member
+ CFLAGS_CYGWIN = -Wno-address-of-packed-member -static
+--- zapret-71.2.orig/nfq/sec.c
++++ zapret-71.2/nfq/sec.c
+@@ -13,7 +13,7 @@
+ 
+ #include <sys/prctl.h>
+ #include <sys/syscall.h>
+-#include <linux/seccomp.h>
++//#include <linux/seccomp.h>
+ #include <linux/filter.h>
+ // __X32_SYSCALL_BIT defined in linux/unistd.h
+ #include <linux/unistd.h>
+@@ -152,6 +152,7 @@
+ 	filter->k = k;
+ }
+ // deny all blocked syscalls
++/*
+ static bool set_seccomp(void)
+ {
+ #ifdef __X32_SYSCALL_BIT
+@@ -181,6 +182,7 @@
+ 	set_filter(&prog.filter[idx++], BPF_JMP + BPF_JGT + BPF_K, 2 + BLOCKED_SYSCALL_COUNT, 0, 2); // 1 - stdout, 2 - stderr. greater are bad
+ 	set_filter(&prog.filter[idx++], BPF_LD + BPF_W + BPF_ABS, 0, 0, syscall_nr); // reload syscall_nr
+ */
++/*
+ 	for(i=0 ; i<BLOCKED_SYSCALL_COUNT ; i++)
+ 	{
+ 		set_filter(&prog.filter[idx++], BPF_JMP + BPF_JEQ + BPF_K, BLOCKED_SYSCALL_COUNT-i, 0, blocked_syscalls[i]);
+@@ -189,9 +191,12 @@
+ 	set_filter(&prog.filter[idx++], BPF_RET + BPF_K, 0, 0, SECCOMP_RET_KILL); // fail case
+ 	return prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER, &prog) >= 0;
+ }
++*/
+ 
+ bool sec_harden(void)
+ {
++	return false;
++/*
+ 	bool bRes = true;
+ 	if (prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0))
+ 	{
+@@ -207,11 +212,9 @@
+ 	}
+ #endif
+ 	return bRes;
++*/
+ }
+ 
+-
+-
+-
+ bool checkpcap(uint64_t caps)
+ {
+ 	if (!caps) return true; // no special caps reqd
+--- zapret-71.2.orig/nfq/sec.h
++++ zapret-71.2/nfq/sec.h
+@@ -2,11 +2,12 @@
+ 
+ #include <sys/types.h>
+ #include <stdbool.h>
++#include <stdint.h>
+ 
+ #ifdef __linux__
+ 
+ #include <stddef.h>
+-#include <sys/capability.h>
++#include <linux/capability.h>
+ #include <linux/audit.h>
+ 
+ bool checkpcap(uint64_t caps);
+@@ -14,9 +15,9 @@
+ int getmaxcap(void);
+ bool dropcaps(void);
+ 
+-#define syscall_nr (offsetof(struct seccomp_data, nr))
+-#define arch_nr (offsetof(struct seccomp_data, arch))
+-#define syscall_arg(x) (offsetof(struct seccomp_data, args[x]))
++//#define syscall_nr (offsetof(struct seccomp_data, nr))
++//#define arch_nr (offsetof(struct seccomp_data, arch))
++//#define syscall_arg(x) (offsetof(struct seccomp_data, args[x]))
+ 
+ #if defined(__aarch64__)
+ 
+--- zapret-71.2.orig/tpws/Makefile
++++ zapret-71.2/tpws/Makefile
+@@ -1,6 +1,6 @@
+ CC ?= cc
+ OPTIMIZE ?= -Os
+-CFLAGS += -std=gnu99 $(OPTIMIZE) -flto=auto
++CFLAGS += -std=gnu99 $(OPTIMIZE)
+ CFLAGS_SYSTEMD = -DUSE_SYSTEMD
+ CFLAGS_BSD = -Wno-address-of-packed-member
+ LDFLAGS_ANDROID = -llog
+--- zapret-71.2.orig/tpws/sec.c
++++ zapret-71.2/tpws/sec.c
+@@ -11,7 +11,7 @@
+ 
+ #include <sys/prctl.h>
+ #include <sys/syscall.h>
+-#include <linux/seccomp.h>
++//#include <linux/seccomp.h>
+ #include <linux/filter.h>
+ // __X32_SYSCALL_BIT defined in linux/unistd.h
+ #include <linux/unistd.h>
+@@ -128,9 +128,12 @@
+ 	filter->jf = jf;
+ 	filter->k = k;
+ }
++
+ // deny all blocked syscalls
+ static bool set_seccomp(void)
+ {
++	return false;
++/*
+ #ifdef __X32_SYSCALL_BIT
+  #define SECCOMP_PROG_SIZE (6 + BLOCKED_SYSCALL_COUNT)
+ #else
+@@ -158,6 +161,7 @@
+ 	set_filter(&prog.filter[idx++], BPF_JMP + BPF_JGT + BPF_K, 2 + BLOCKED_SYSCALL_COUNT, 0, 2); // 1 - stdout, 2 - stderr. greater are bad
+ 	set_filter(&prog.filter[idx++], BPF_LD + BPF_W + BPF_ABS, 0, 0, syscall_nr); // reload syscall_nr
+ */
++/*
+ 	for(i=0 ; i<BLOCKED_SYSCALL_COUNT ; i++)
+ 	{
+ 		set_filter(&prog.filter[idx++], BPF_JMP + BPF_JEQ + BPF_K, BLOCKED_SYSCALL_COUNT-i, 0, blocked_syscalls[i]);
+@@ -165,10 +169,13 @@
+ 	set_filter(&prog.filter[idx++], BPF_RET + BPF_K, 0, 0, SECCOMP_RET_ALLOW); // success case
+ 	set_filter(&prog.filter[idx++], BPF_RET + BPF_K, 0, 0, SECCOMP_RET_KILL); // fail case
+ 	return prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER, &prog) >= 0;
++*/
+ }
+ 
+ bool sec_harden(void)
+ {
++	return false;
++/*
+ 	bool bRes = true;
+ 	if (prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0))
+ 	{
+@@ -184,6 +191,7 @@
+ 	}
+ #endif
+ 	return bRes;
++*/
+ }
+ 
+ 
+--- zapret-71.2.orig/tpws/sec.h
++++ zapret-71.2/tpws/sec.h
+@@ -8,7 +8,7 @@
+ #ifdef __linux__
+ 
+ #include <stddef.h>
+-#include <sys/capability.h>
++#include <linux/capability.h>
+ #include <linux/audit.h>
+ 
+ bool checkpcap(uint64_t caps);

@@ -1,0 +1,15 @@
+diff -urN libusb-1.0.29-orig/configure.ac libusb-1.0.29-orig/configure.ac
+--- libusb-1.0.29-orig/configure.ac	2025-05-03 12:14:36.000000000 +0300
++++ libusb-1.0.29/configure.ac	2025-06-22 18:50:27.198757713 +0300
+@@ -182,8 +182,8 @@ usb_modeswitch fix by removing libatomic dependency from libusb
+ 	AC_MSG_RESULT($GCC_ATOMIC_BUILTINS_SUPPORTED)
+-	if test "x$GCC_ATOMIC_BUILTINS_SUPPORTED" != xyes; then
+-		AC_SEARCH_LIBS([__atomic_fetch_add_4], [atomic])
+-	fi
++#	if test "x$GCC_ATOMIC_BUILTINS_SUPPORTED" != xyes; then
++#		AC_SEARCH_LIBS([__atomic_fetch_add_4], [atomic])
++#	fi
+ elif test "x$platform" = xwindows; then
+ 	AC_DEFINE([PLATFORM_WINDOWS], [1], [Define to 1 if compiling for a Windows platform.])
+ else
+ 	AC_MSG_ERROR([Unknown platform])
