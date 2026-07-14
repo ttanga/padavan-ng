@@ -1269,7 +1269,7 @@ function wg_conf_import() {
                                     <td colspan="2"">
                                         <a href="javascript:spoiler_toggle('spoiler_vpnc_remote_network')"><span><#VPNC_RNet_List#>:</span></a>
                                         <div id="spoiler_vpnc_remote_network" style="display: none">
-                                            <textarea rows="16" wrap="off" spellcheck="false" maxlength="8192" class="span12" name="scripts.vpnc_remote_network.list" style="font-family:'Courier New'; font-size:12px; resize:vertical;"><% nvram_dump("scripts.vpnc_remote_network.list",""); %></textarea>
+                                            <textarea rows="16" wrap="off" spellcheck="false" maxlength="65536" class="span12" name="scripts.vpnc_remote_network.list" style="font-family:'Courier New'; font-size:12px; resize:vertical;"><% nvram_dump("scripts.vpnc_remote_network.list",""); %></textarea>
                                         </div>
                                     </td>
                                 </tr>
